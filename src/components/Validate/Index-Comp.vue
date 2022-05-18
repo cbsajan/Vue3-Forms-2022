@@ -1,6 +1,6 @@
 <template>
 
-    <Form>
+    <Form @submit="onSubmit">
 
         <div class="form-group">
             <label for="name">Name</label>
@@ -15,15 +15,27 @@
 
         <div class="form-group">
             <label for="email">Email</label>
-            <Field name="email" :rules="validateEmail" v-slot="{ field, errors }">
+            <Field name="email" :rules="validateEmail" v-slot="{ field, errors, errorMessage }">
 
                 <input type="text" id="email" class="form-control" v-bind="field"
                     :class="{ 'is-invalid': errors.length !== 0 }" />
+                <div class="alert alert-danger" role="alert" v-if="errors.length !== 0">
+                    {{ errorMessage }}
+                </div>
             </Field>
 
 
         </div>
-
+        <div class="form-group">
+            <label for="message">Message</label>
+            <Field name="message" :rules="validateMessage" v-slot="{ field, errors, errorMessage }">
+                <textarea name="" class="form-control" :class="{ 'is-invalid': errors.length !== 0 }" rows="3"
+                    v-bind="field"></textarea>
+                <div class="alert alert-danger" role="alert" v-if="errors.length !== 0">
+                    {{ errorMessage }}
+                </div>
+            </Field>
+        </div>
 
 
         <hr />
@@ -44,6 +56,10 @@ export default {
         ErrorMessage
     },
     methods: {
+        onSubmit(values, { resetForm }) {
+            console.log(values)
+            resetForm();
+        },
         isRequired(value) {
             if (!value) {
                 return 'The field is required'
@@ -62,6 +78,12 @@ export default {
             }
             if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
                 return 'Bad email'
+            }
+            return true;
+        },
+        validateMessage(value) {
+            if (!value) {
+                return 'The message is required'
             }
             return true;
         }
